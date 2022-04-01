@@ -29,12 +29,38 @@ namespace ParkyWeb.Repository
             }
             else
             {
-                return "";
+                return new User();
             }
 
             var client = _clientFactory.CreateClient();
             HttpResponseMessage response = await client.SendAsync(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var jsonString = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<User>(jsonString);
+            }
+            else
+            {
+                return new User();
+            }
+        }
+
+        public async Task<bool> RegisterAsync(string url, User objToCreate)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            if (objToCreate != null)
+            {
+                request.Content = new StringContent(
+                    JsonConvert.SerializeObject(objToCreate), Encoding.UTF8, "application/json");
+            }
+            else
+            {
+                return false;
+            }
+
+            var client = _clientFactory.CreateClient();
+            HttpResponseMessage response = await client.SendAsync(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 return true;
             }
@@ -42,11 +68,6 @@ namespace ParkyWeb.Repository
             {
                 return false;
             }
-        }
-
-        public Task<bool> RegisterAsync(string url, User objToCreate)
-        {
-            throw new NotImplementedException();
         }
     }
 
