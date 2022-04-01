@@ -29,7 +29,7 @@ namespace ParkyWeb.Repository
             }
             else
             {
-                return false;
+                return "";
             }
 
             var client = _clientFactory.CreateClient();
